@@ -9,39 +9,61 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg1: #07111f;
+      --bg2: #0b1220;
+      --card: #111827;
+      --card2: #0f172a;
+      --line: rgba(255,255,255,0.06);
+      --text: #ffffff;
+      --muted: #94a3b8;
+      --gold: #f6c453;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --neutral: #facc15;
+      --info: #60a5fa;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #07111f 0%, #0b1220 100%);
-      color: white;
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      color: var(--text);
     }
 
     .container {
-      max-width: 1150px;
+      max-width: 1180px;
       margin: auto;
       padding: 20px;
     }
 
     h1 {
       text-align: center;
-      color: #f6c453;
-      margin-bottom: 10px;
+      color: var(--gold);
+      margin: 0 0 10px;
       font-size: 42px;
     }
 
     .subtitle {
       text-align: center;
-      color: #9ca3af;
-      margin-bottom: 25px;
+      color: var(--muted);
+      margin-bottom: 24px;
       font-size: 15px;
     }
 
     .card {
-      background: #111827;
+      background: var(--card);
       border-radius: 18px;
       padding: 20px;
       margin-top: 18px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 1px solid var(--line);
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin: 0 0 14px;
+      color: #f9fafb;
     }
 
     .grid {
@@ -86,7 +108,7 @@
     }
 
     .primary {
-      background: #f6c453;
+      background: var(--gold);
       color: #111827;
       flex: 1;
     }
@@ -107,25 +129,51 @@
       background: #020617;
       border-radius: 14px;
       font-size: 16px;
-      line-height: 1.7;
+      line-height: 1.75;
+      border: 1px solid var(--line);
+    }
+
+    .decision-banner {
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 16px;
+      font-weight: bold;
+      font-size: 22px;
+      text-align: center;
+      border: 1px solid var(--line);
+    }
+
+    .decision-good {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--good);
+    }
+
+    .decision-bad {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--bad);
+    }
+
+    .decision-neutral {
+      background: rgba(250, 204, 21, 0.12);
+      color: var(--neutral);
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 14px;
-      margin-top: 16px;
+      margin-top: 14px;
     }
 
     .box {
-      background: #0f172a;
+      background: var(--card2);
       border-radius: 14px;
       padding: 14px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
     }
 
     .box-title {
-      color: #94a3b8;
+      color: var(--muted);
       font-size: 13px;
       margin-bottom: 8px;
     }
@@ -137,32 +185,26 @@
     }
 
     .good {
-      color: #22c55e;
+      color: var(--good);
     }
 
     .bad {
-      color: #ef4444;
+      color: var(--bad);
     }
 
     .neutral {
-      color: #facc15;
+      color: var(--neutral);
     }
 
     .info {
-      color: #60a5fa;
+      color: var(--info);
     }
 
     .small-note {
       margin-top: 14px;
-      color: #9ca3af;
+      color: var(--muted);
       font-size: 13px;
       line-height: 1.6;
-    }
-
-    .section-title {
-      font-size: 22px;
-      margin: 0 0 12px 0;
-      color: #f9fafb;
     }
 
     .row-list {
@@ -179,11 +221,11 @@
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
     }
 
     .row-item span:first-child {
-      color: #94a3b8;
+      color: var(--muted);
     }
 
     .row-item span:last-child {
@@ -195,7 +237,7 @@
       background: #0b1324;
       border-radius: 14px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
       min-height: 520px;
     }
 
@@ -204,7 +246,7 @@
       height: 520px;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 950px) {
       .grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -214,11 +256,8 @@
       }
     }
 
-    @media (max-width: 600px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
+    @media (max-width: 640px) {
+      .grid,
       .stats-grid {
         grid-template-columns: 1fr;
       }
@@ -236,6 +275,10 @@
         font-size: 32px;
       }
 
+      .decision-banner {
+        font-size: 18px;
+      }
+
       #tvChart {
         height: 420px;
       }
@@ -249,9 +292,10 @@
 <body>
   <div class="container">
     <h1>Coin Analiz Pro</h1>
-    <div class="subtitle">Canlı fiyat, teknik analiz, hedef tahmini ve grafik</div>
+    <div class="subtitle">Canlı fiyat, teknik analiz, net karar sistemi ve grafik</div>
 
     <div class="card">
+      <h2 class="section-title">Girdi</h2>
       <div class="grid">
         <div>
           <label for="coin">Coin</label>
@@ -295,6 +339,7 @@
         <button class="ghost" onclick="loadSavedData()">Yükle</button>
       </div>
 
+      <div id="decisionBanner" class="decision-banner decision-neutral">BEKLENİYOR</div>
       <div class="summary" id="summaryBox">Veri bekleniyor...</div>
       <div class="small-note" id="updateTime">-</div>
     </div>
@@ -305,7 +350,7 @@
         <div id="tvChart"></div>
       </div>
       <div class="small-note">
-        Grafik TradingView üzerinden gösterilir. Coin veya periyot değiştiğinde grafik de güncellenir.
+        Grafik TradingView ile gösterilir. Coin, parite veya periyot değişince güncellenir.
       </div>
     </div>
 
@@ -358,8 +403,13 @@
       <h2 class="section-title">Plan ve Tahmin</h2>
       <div class="row-list">
         <div class="row-item">
-          <span>Sinyal</span>
+          <span>Net Karar</span>
           <span id="signalBox">-</span>
+        </div>
+
+        <div class="row-item">
+          <span>Karar Sebebi</span>
+          <span id="reasonBox">-</span>
         </div>
 
         <div class="row-item">
@@ -397,6 +447,10 @@
           <span id="rrBox">-</span>
         </div>
       </div>
+
+      <div class="small-note">
+        Bu sistem kesin yatırım tavsiyesi vermez. Karar; trend, momentum ve risk/ödül dengesine göre otomatik yorumdur.
+      </div>
     </div>
   </div>
 
@@ -420,7 +474,6 @@
       if (values.length < period) return null;
       const k = 2 / (period + 1);
       let emaPrev = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
-
       for (let i = period; i < values.length; i++) {
         emaPrev = values[i] * k + emaPrev * (1 - k);
       }
@@ -456,7 +509,7 @@
       return 100 - (100 / (1 + rs));
     }
 
-    function getSignal(price, ema20, ema50, rsiValue) {
+    function getBaseSignal(price, ema20, ema50, rsiValue) {
       if (!ema20 || !ema50 || rsiValue === null) {
         return { trend: "Yetersiz veri", signal: "BEKLE", className: "neutral" };
       }
@@ -478,6 +531,53 @@
       }
 
       return { trend: "Kararsız", signal: "BEKLE", className: "neutral" };
+    }
+
+    function finalDecision(price, ema20, ema50, rsiValue, targetUp, targetDown) {
+      let decision = "BEKLE";
+      let cls = "neutral";
+      let reason = "Net bir üstünlük yok.";
+
+      const upside = targetUp ? ((targetUp - price) / price) * 100 : 0;
+      const downside = targetDown ? ((price - targetDown) / price) * 100 : 0;
+
+      if (
+        price > ema20 &&
+        ema20 > ema50 &&
+        rsiValue >= 45 &&
+        rsiValue <= 65 &&
+        upside > downside
+      ) {
+        decision = "GÜÇLÜ AL";
+        cls = "good";
+        reason = "Trend yukarı, momentum dengeli, ödül riske göre daha güçlü.";
+      } else if (
+        price > ema20 &&
+        rsiValue >= 40 &&
+        upside > downside
+      ) {
+        decision = "AL";
+        cls = "good";
+        reason = "Yukarı potansiyel aşağı riske göre daha iyi görünüyor.";
+      } else if (
+        price < ema20 &&
+        ema20 < ema50 &&
+        downside >= upside
+      ) {
+        decision = "SAT";
+        cls = "bad";
+        reason = "Trend aşağı ve aşağı yönlü baskı sürüyor.";
+      } else if (rsiValue > 70) {
+        decision = "UZAK DUR";
+        cls = "bad";
+        reason = "Fiyat aşırı alım bölgesinde, düzeltme riski yüksek.";
+      } else if (rsiValue < 30 && upside > downside) {
+        decision = "TAKİP ET";
+        cls = "good";
+        reason = "Aşırı satım var, tepki yükselişi ihtimali oluşabilir.";
+      }
+
+      return { decision, cls, reason };
     }
 
     function setText(id, text, className = "") {
@@ -583,7 +683,10 @@
       const symbol = coin + pair;
 
       const summaryBox = document.getElementById("summaryBox");
+      const decisionBanner = document.getElementById("decisionBanner");
       summaryBox.textContent = "Veri alınıyor...";
+      decisionBanner.textContent = "HESAPLANIYOR";
+      decisionBanner.className = "decision-banner decision-neutral";
 
       try {
         const priceRes = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
@@ -640,7 +743,8 @@
           }
         }
 
-        const analysis = getSignal(price, ema20, ema50, rsiValue);
+        const baseSignal = getBaseSignal(price, ema20, ema50, rsiValue);
+        const decision = finalDecision(price, ema20, ema50, rsiValue, targetUp, targetDown);
 
         let rrText = "Nötr";
         let rrClass = "neutral";
@@ -650,10 +754,10 @@
           const downside = ((price - targetDown) / price) * 100;
 
           if (upside > downside) {
-            rrText = `Ödül daha güçlü (%${upside.toFixed(2)} / -%${downside.toFixed(2)})`;
+            rrText = `Yukarı potansiyel daha iyi (+%${upside.toFixed(2)} / -%${downside.toFixed(2)})`;
             rrClass = "good";
           } else if (downside > upside) {
-            rrText = `Risk daha yüksek (-%${downside.toFixed(2)} / +%${upside.toFixed(2)})`;
+            rrText = `Aşağı risk daha yüksek (-%${downside.toFixed(2)} / +%${upside.toFixed(2)})`;
             rrClass = "bad";
           } else {
             rrText = `Dengeli (+%${upside.toFixed(2)} / -%${downside.toFixed(2)})`;
@@ -664,19 +768,30 @@
         summaryBox.innerHTML =
           `<b>${symbol}</b> analiz tamamlandı.<br>` +
           `Periyot: <b>${interval}</b><br>` +
-          `Trend: <span class="${analysis.className}"><b>${analysis.trend}</b></span><br>` +
-          `Sinyal: <span class="${analysis.className}"><b>${analysis.signal}</b></span>`;
+          `Trend: <span class="${baseSignal.className}"><b>${baseSignal.trend}</b></span><br>` +
+          `Teknik durum: <span class="${baseSignal.className}"><b>${baseSignal.signal}</b></span><br>` +
+          `Net karar: <span class="${decision.cls}"><b>${decision.decision}</b></span><br>` +
+          `Açıklama: <b>${decision.reason}</b>`;
+
+        decisionBanner.textContent = decision.decision;
+        decisionBanner.className =
+          `decision-banner ${decision.cls === 'good' ? 'decision-good' : decision.cls === 'bad' ? 'decision-bad' : 'decision-neutral'}`;
 
         setText("symbolBox", symbol);
         setText("priceBox", formatMoney(price, pair, 4));
         setText("valueBox", formatMoney(totalValue, pair, 2));
         setText("pnlBox", formatMoney(pnl, pair, 2), pnl >= 0 ? "good" : "bad");
-        setText("rsiBox", rsiValue !== null ? formatNumber(rsiValue, 2) : "-", rsiValue > 70 ? "bad" : rsiValue < 30 ? "good" : "neutral");
+        setText(
+          "rsiBox",
+          rsiValue !== null ? formatNumber(rsiValue, 2) : "-",
+          rsiValue > 70 ? "bad" : rsiValue < 30 ? "good" : "neutral"
+        );
         setText("ema20Box", ema20 !== null ? formatMoney(ema20, pair, 4) : "-");
         setText("ema50Box", ema50 !== null ? formatMoney(ema50, pair, 4) : "-");
-        setText("trendBox", analysis.trend, analysis.className);
+        setText("trendBox", baseSignal.trend, baseSignal.className);
 
-        setInlineText("signalBox", analysis.signal, analysis.className);
+        setInlineText("signalBox", decision.decision, decision.cls);
+        setInlineText("reasonBox", decision.reason, "info");
         setInlineText("supportBox", formatMoney(support, pair, 4), "info");
         setInlineText("resistanceBox", formatMoney(resistance, pair, 4), "info");
         setInlineText("stopBox", formatMoney(stopLoss, pair, 4), "bad");
