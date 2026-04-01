@@ -14,7 +14,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
       padding: 20px;
     }
@@ -22,6 +22,7 @@
     h1 {
       text-align: center;
       color: #f6c453;
+      margin-bottom: 20px;
     }
 
     .card {
@@ -29,6 +30,12 @@
       padding: 20px;
       border-radius: 15px;
       margin-top: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
     }
 
     label {
@@ -39,17 +46,18 @@
 
     input, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 5px;
       border-radius: 10px;
       border: none;
       background: #1f2937;
       color: white;
+      box-sizing: border-box;
     }
 
     button {
-      margin-top: 15px;
-      padding: 12px;
+      margin-top: 20px;
+      padding: 14px;
       width: 100%;
       border: none;
       border-radius: 10px;
@@ -57,77 +65,252 @@
       color: black;
       font-weight: bold;
       cursor: pointer;
+      font-size: 16px;
     }
 
-    .result {
+    .result, .stats {
       margin-top: 15px;
       padding: 15px;
       background: #020617;
       border-radius: 10px;
     }
 
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .box {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .title {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
     .good { color: #22c55e; }
     .bad { color: #ef4444; }
+    .neutral { color: #facc15; }
+
+    @media (max-width: 700px) {
+      .grid, .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div class="container">
+    <h1>Coin Analiz Pro</h1>
 
-<div class="container">
-  <h1>Coin Analiz Pro</h1>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>Coin</label>
+          <input id="coin" value="BTC">
+        </div>
 
-  <div class="card">
-    <label>Coin</label>
-    <input id="coin" value="BTC">
+        <div>
+          <label>Parite</label>
+          <select id="pair">
+            <option value="USDT">USDT</option>
+            <option value="TRY" selected>TRY</option>
+          </select>
+        </div>
 
-    <label>Parite</label>
-    <select id="pair">
-      <option value="USDT">USDT</option>
-      <option value="TRY">TRY</option>
-    </select>
+        <div>
+          <label>Adet</label>
+          <input id="amount" type="number" value="1">
+        </div>
 
-    <label>Adet</label>
-    <input id="amount" type="number" value="1">
+        <div>
+          <label>Ortalama Maliyet</label>
+          <input id="cost" type="number" value="0">
+        </div>
+      </div>
 
-    <label>Ortalama Maliyet</label>
-    <input id="cost" type="number" value="0">
+      <button onclick="analyze()">Analiz Et</button>
 
-    <button onclick="analyze()">Analiz Et</button>
+      <div class="result" id="result">Veri bekleniyor...</div>
 
-    <div class="result" id="result">
-      Veri bekleniyor...
+      <div class="stats" id="stats" style="display:none;">
+        <div class="stats-grid">
+          <div class="box">
+            <div class="title">Anlık Fiyat</div>
+            <div class="value" id="priceBox">-</div>
+          </div>
+          <div class="box">
+            <div class="title">Toplam Değer</div>
+            <div class="value" id="valueBox">-</div>
+          </div>
+          <div class="box">
+            <div class="title">Kâr / Zarar</div>
+            <div class="value" id="pnlBox">-</div>
+          </div>
+          <div class="box">
+            <div class="title">RSI</div>
+            <div class="value" id="rsiBox">-</div>
+          </div>
+          <div class="box">
+            <div class="title">EMA 20</div>
+            <div class="value" id="ema20Box">-</div>
+          </div>
+          <div class="box">
+            <div class="title">EMA 50</div>
+            <div class="value" id="ema50Box">-</div>
+          </div>
+          <div class="box">
+            <div class="title">Trend</div>
+            <div class="value" id="trendBox">-</div>
+          </div>
+          <div class="box">
+            <div class="title">Sinyal</div>
+            <div class="value" id="signalBox">-</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-async function analyze() {
-  const coin = document.getElementById("coin").value.toUpperCase();
-  const pair = document.getElementById("pair").value;
-  const amount = Number(document.getElementById("amount").value);
-  const cost = Number(document.getElementById("cost").value);
+  <script>
+    function ema(values, period) {
+      if (values.length < period) return null;
+      const k = 2 / (period + 1);
+      let emaPrev = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+      for (let i = period; i < values.length; i++) {
+        emaPrev = values[i] * k + emaPrev * (1 - k);
+      }
+      return emaPrev;
+    }
 
-  const symbol = coin + pair;
+    function rsi(values, period = 14) {
+      if (values.length < period + 1) return null;
 
-  try {
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
-    const data = await res.json();
+      let gains = 0;
+      let losses = 0;
 
-    const price = Number(data.price);
-    const value = price * amount;
-    const totalCost = cost * amount;
-    const pnl = value - totalCost;
+      for (let i = 1; i <= period; i++) {
+        const diff = values[i] - values[i - 1];
+        if (diff >= 0) gains += diff;
+        else losses += Math.abs(diff);
+      }
 
-    document.getElementById("result").innerHTML = `
-      <b>Fiyat:</b> ${price.toFixed(4)} ${pair}<br>
-      <b>Toplam Değer:</b> ${value.toFixed(2)} ${pair}<br>
-      <b>Kâr/Zarar:</b> <span class="${pnl >= 0 ? 'good' : 'bad'}">${pnl.toFixed(2)} ${pair}</span>
-    `;
-  } catch (e) {
-    document.getElementById("result").innerText = "Veri alınamadı";
-  }
-}
-</script>
+      let avgGain = gains / period;
+      let avgLoss = losses / period;
 
+      for (let i = period + 1; i < values.length; i++) {
+        const diff = values[i] - values[i - 1];
+        const gain = diff > 0 ? diff : 0;
+        const loss = diff < 0 ? Math.abs(diff) : 0;
+
+        avgGain = ((avgGain * (period - 1)) + gain) / period;
+        avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+      }
+
+      if (avgLoss === 0) return 100;
+      const rs = avgGain / avgLoss;
+      return 100 - (100 / (1 + rs));
+    }
+
+    function signalText(price, ema20, ema50, rsiValue) {
+      if (!ema20 || !ema50 || !rsiValue) {
+        return { trend: "Yetersiz veri", signal: "Bekle", cls: "neutral" };
+      }
+
+      if (price > ema20 && ema20 > ema50 && rsiValue >= 45 && rsiValue <= 65) {
+        return { trend: "Yukarı", signal: "AL", cls: "good" };
+      }
+
+      if (price < ema20 && ema20 < ema50) {
+        return { trend: "Aşağı", signal: "SAT", cls: "bad" };
+      }
+
+      if (rsiValue > 70) {
+        return { trend: "Aşırı Alım", signal: "Dikkat", cls: "bad" };
+      }
+
+      if (rsiValue < 30) {
+        return { trend: "Aşırı Satım", signal: "Takip Et", cls: "good" };
+      }
+
+      return { trend: "Kararsız", signal: "BEKLE", cls: "neutral" };
+    }
+
+    async function analyze() {
+      const coin = document.getElementById("coin").value.toUpperCase().trim();
+      const pair = document.getElementById("pair").value;
+      const amount = Number(document.getElementById("amount").value);
+      const cost = Number(document.getElementById("cost").value);
+      const symbol = coin + pair;
+
+      try {
+        const priceRes = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+        const priceData = await priceRes.json();
+
+        if (!priceData.price) {
+          document.getElementById("result").innerText = "Geçersiz coin veya parite";
+          document.getElementById("stats").style.display = "none";
+          return;
+        }
+
+        const klineRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=120`);
+        const klineData = await klineRes.json();
+
+        const closes = klineData.map(k => Number(k[4]));
+        const price = Number(priceData.price);
+        const totalValue = price * amount;
+        const totalCost = cost * amount;
+        const pnl = totalValue - totalCost;
+
+        const ema20 = ema(closes, 20);
+        const ema50 = ema(closes, 50);
+        const rsiValue = rsi(closes, 14);
+        const analysis = signalText(price, ema20, ema50, rsiValue);
+
+        document.getElementById("result").innerHTML = `
+          <b>${symbol}</b> için analiz tamamlandı.
+        `;
+
+        document.getElementById("stats").style.display = "block";
+
+        document.getElementById("priceBox").innerText = `${price.toFixed(4)} ${pair}`;
+        document.getElementById("valueBox").innerText = `${totalValue.toFixed(2)} ${pair}`;
+
+        const pnlBox = document.getElementById("pnlBox");
+        pnlBox.innerText = `${pnl.toFixed(2)} ${pair}`;
+        pnlBox.className = `value ${pnl >= 0 ? 'good' : 'bad'}`;
+
+        document.getElementById("rsiBox").innerText = rsiValue ? rsiValue.toFixed(2) : "-";
+        document.getElementById("ema20Box").innerText = ema20 ? ema20.toFixed(4) : "-";
+        document.getElementById("ema50Box").innerText = ema50 ? ema50.toFixed(4) : "-";
+
+        const trendBox = document.getElementById("trendBox");
+        trendBox.innerText = analysis.trend;
+        trendBox.className = `value ${analysis.cls}`;
+
+        const signalBox = document.getElementById("signalBox");
+        signalBox.innerText = analysis.signal;
+        signalBox.className = `value ${analysis.cls}`;
+
+      } catch (e) {
+        document.getElementById("result").innerText = "Veri alınamadı";
+        document.getElementById("stats").style.display = "none";
+      }
+    }
+
+    analyze();
+  </script>
 </body>
 </html>
