@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coin Analiz Pro</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     :root {
       --bg1: #07111f;
@@ -184,21 +182,10 @@
       word-break: break-word;
     }
 
-    .good {
-      color: var(--good);
-    }
-
-    .bad {
-      color: var(--bad);
-    }
-
-    .neutral {
-      color: var(--neutral);
-    }
-
-    .info {
-      color: var(--info);
-    }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    .neutral { color: var(--neutral); }
+    .info { color: var(--info); }
 
     .small-note {
       margin-top: 14px;
@@ -246,23 +233,113 @@
       height: 520px;
     }
 
+    .scanner-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .scanner-summary {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px solid var(--line);
+      color: #dbeafe;
+    }
+
+    .scanner-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .scan-card {
+      background: #0b1324;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .scan-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(246,196,83,.35);
+    }
+
+    .scan-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .scan-rows {
+      display: grid;
+      gap: 8px;
+    }
+
+    .scan-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(255,255,255,.06);
+    }
+
+    .scan-row:last-child {
+      border-bottom: 0;
+    }
+
+    .scan-row span:first-child {
+      color: var(--muted);
+    }
+
+    .scan-why {
+      margin-top: 10px;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .scan-pick {
+      margin-top: 12px;
+      display: inline-block;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(246,196,83,.12);
+      color: var(--gold);
+      font-weight: bold;
+      border: 1px solid rgba(246,196,83,.25);
+    }
+
     @media (max-width: 950px) {
       .grid {
         grid-template-columns: 1fr 1fr;
       }
 
-      .stats-grid {
+      .stats-grid,
+      .scanner-grid {
         grid-template-columns: 1fr 1fr;
       }
     }
 
     @media (max-width: 640px) {
       .grid,
-      .stats-grid {
+      .stats-grid,
+      .scanner-grid {
         grid-template-columns: 1fr;
       }
 
-      .row-item {
+      .row-item, .scan-row {
         flex-direction: column;
         align-items: flex-start;
       }
@@ -292,7 +369,7 @@
 <body>
   <div class="container">
     <h1>Coin Analiz Pro</h1>
-    <div class="subtitle">Canlı fiyat, teknik analiz, net karar sistemi ve grafik</div>
+    <div class="subtitle">Canlı fiyat, teknik analiz, net karar sistemi, grafik ve en iyi 10 alım fırsatı</div>
 
     <div class="card">
       <h2 class="section-title">Girdi</h2>
@@ -342,6 +419,18 @@
       <div id="decisionBanner" class="decision-banner decision-neutral">BEKLENİYOR</div>
       <div class="summary" id="summaryBox">Veri bekleniyor...</div>
       <div class="small-note" id="updateTime">-</div>
+    </div>
+
+    <div class="card">
+      <div class="scanner-head">
+        <h2 class="section-title" style="margin-bottom:0;">En İyi 10 Alım Fırsatı</h2>
+        <button class="primary" style="flex:0;" onclick="scanTopCoins()">Taramayı Yenile</button>
+      </div>
+      <div id="scannerSummary" class="scanner-summary">Tarama bekleniyor...</div>
+      <div id="scannerResults" class="scanner-grid"></div>
+      <div class="small-note">
+        Seçilen pariteye göre tarar. Hacmi güçlü coinler arasından RSI, EMA, trend ve risk/ödül yapısına göre puanlayıp en iyi 10 coin’i listeler.
+      </div>
     </div>
 
     <div class="card">
@@ -456,6 +545,9 @@
 
   <script>
     const STORAGE_KEY = "coin_analiz_pro_data";
+    const API_BASE = "https://api.binance.com";
+    const SCAN_LIMIT = 35;
+    const SCAN_TOP = 10;
 
     function formatNumber(num, digits = 4) {
       if (num === null || num === undefined || isNaN(num)) return "-";
@@ -499,7 +591,6 @@
         const diff = values[i] - values[i - 1];
         const gain = diff > 0 ? diff : 0;
         const loss = diff < 0 ? Math.abs(diff) : 0;
-
         avgGain = ((avgGain * (period - 1)) + gain) / period;
         avgLoss = ((avgLoss * (period - 1)) + loss) / period;
       }
@@ -578,6 +669,56 @@
       }
 
       return { decision, cls, reason };
+    }
+
+    function scoreCoin(price, ema20, ema50, rsiValue, support, resistance, targetUp, targetDown) {
+      let score = 0;
+      const notes = [];
+      const upside = targetUp ? ((targetUp - price) / price) * 100 : 0;
+      const downside = targetDown ? ((price - targetDown) / price) * 100 : 0;
+
+      if (ema20 && ema50 && price > ema20 && ema20 > ema50) {
+        score += 4;
+        notes.push("Yukarı trend");
+      } else if (ema20 && ema50 && price > ema20) {
+        score += 2;
+        notes.push("Fiyat EMA20 üstünde");
+      }
+
+      if (rsiValue >= 45 && rsiValue <= 62) {
+        score += 3;
+        notes.push("RSI dengeli");
+      } else if (rsiValue < 35) {
+        score += 2;
+        notes.push("Dipten tepki ihtimali");
+      } else if (rsiValue > 70) {
+        score -= 3;
+        notes.push("RSI çok yüksek");
+      }
+
+      if (upside > downside) {
+        score += 3;
+        notes.push("Ödül riskten iyi");
+      } else {
+        score -= 1;
+      }
+
+      if (price > support * 1.01 && price < resistance * 0.97) {
+        score += 1;
+        notes.push("Hareket alanı var");
+      }
+
+      if (price >= resistance * 0.99) {
+        score += 1;
+        notes.push("Direnç kırılımına yakın");
+      }
+
+      return {
+        score,
+        noteText: notes.join(" • ") || "Standart görünüm",
+        upside,
+        downside
+      };
     }
 
     function setText(id, text, className = "") {
@@ -674,6 +815,24 @@
       chartEl.appendChild(wrap);
     }
 
+    async function fetchExchangeInfo() {
+      const res = await fetch(`${API_BASE}/api/v3/exchangeInfo`);
+      if (!res.ok) throw new Error("exchangeInfo alınamadı");
+      return await res.json();
+    }
+
+    async function fetch24h() {
+      const res = await fetch(`${API_BASE}/api/v3/ticker/24hr`);
+      if (!res.ok) throw new Error("24h alınamadı");
+      return await res.json();
+    }
+
+    async function fetchKlines(symbol, interval = "1h", limit = 120) {
+      const res = await fetch(`${API_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+      if (!res.ok) throw new Error("kline alınamadı");
+      return await res.json();
+    }
+
     async function analyze() {
       const coin = document.getElementById("coin").value.toUpperCase().trim();
       const pair = document.getElementById("pair").value;
@@ -689,7 +848,7 @@
       decisionBanner.className = "decision-banner decision-neutral";
 
       try {
-        const priceRes = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+        const priceRes = await fetch(`${API_BASE}/api/v3/ticker/price?symbol=${symbol}`);
         const priceData = await priceRes.json();
 
         if (!priceData.price) {
@@ -697,8 +856,7 @@
           return;
         }
 
-        const klineRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=120`);
-        const klineData = await klineRes.json();
+        const klineData = await fetchKlines(symbol, interval, 120);
 
         if (!Array.isArray(klineData) || !klineData.length) {
           summaryBox.textContent = "Mum verisi alınamadı.";
@@ -809,12 +967,162 @@
       }
     }
 
+    async function scanTopCoins() {
+      const pair = document.getElementById("pair").value;
+      const summary = document.getElementById("scannerSummary");
+      const results = document.getElementById("scannerResults");
+
+      summary.textContent = "Tarama yapılıyor...";
+      results.innerHTML = "";
+
+      try {
+        const [exchangeInfo, tickers] = await Promise.all([
+          fetchExchangeInfo(),
+          fetch24h()
+        ]);
+
+        const validSymbols = new Set(
+          exchangeInfo.symbols
+            .filter(s => s.status === "TRADING" && s.quoteAsset === pair && s.isSpotTradingAllowed)
+            .map(s => s.symbol)
+        );
+
+        const candidates = tickers
+          .filter(t => validSymbols.has(t.symbol))
+          .sort((a, b) => Number(b.quoteVolume || 0) - Number(a.quoteVolume || 0))
+          .slice(0, SCAN_LIMIT);
+
+        const analyses = await Promise.all(
+          candidates.map(async (ticker) => {
+            try {
+              const symbol = ticker.symbol;
+              const klines = await fetchKlines(symbol, "1h", 120);
+              const closes = klines.map(k => Number(k[4]));
+              const highs = klines.map(k => Number(k[2]));
+              const lows = klines.map(k => Number(k[3]));
+              const price = closes[closes.length - 1];
+
+              const ema20 = ema(closes, 20);
+              const ema50 = ema(closes, 50);
+              const rsiValue = rsi(closes, 14);
+
+              const support = Math.min(...lows.slice(-30));
+              const resistance = Math.max(...highs.slice(-30));
+
+              let targetUp = null;
+              let targetDown = null;
+
+              if (ema20 && ema50) {
+                targetUp = price > ema20 && ema20 > ema50 ? resistance * 1.05 : resistance * 1.02;
+                targetDown = price < ema20 && ema20 < ema50 ? support * 0.95 : support * 0.98;
+              }
+
+              const baseSignal = getBaseSignal(price, ema20, ema50, rsiValue);
+              const decision = finalDecision(price, ema20, ema50, rsiValue, targetUp, targetDown);
+              const score = scoreCoin(price, ema20, ema50, rsiValue, support, resistance, targetUp, targetDown);
+
+              const baseAsset = exchangeInfo.symbols.find(s => s.symbol === symbol)?.baseAsset || symbol.replace(pair, "");
+
+              return {
+                symbol,
+                baseAsset,
+                price,
+                rsiValue,
+                ema20,
+                ema50,
+                support,
+                resistance,
+                decision,
+                baseSignal,
+                score: score.score,
+                why: score.noteText,
+                upside: score.upside,
+                downside: score.downside,
+                changePct: Number(ticker.priceChangePercent || 0),
+                quoteVolume: Number(ticker.quoteVolume || 0)
+              };
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        const filtered = analyses
+          .filter(Boolean)
+          .sort((a, b) => b.score - a.score || b.changePct - a.changePct)
+          .slice(0, SCAN_TOP);
+
+        if (!filtered.length) {
+          summary.textContent = "Uygun sonuç bulunamadı.";
+          return;
+        }
+
+        summary.innerHTML = `
+          <b>${pair}</b> paritesinde hacmi güçlü coinler tarandı.
+          <br><b>${filtered.length}</b> coin öne çıktı.
+          <br>Liste alım yönlü puanı en yüksek coinlerden oluşur.
+        `;
+
+        results.innerHTML = filtered.map((item, index) => `
+          <div class="scan-card" onclick="pickCoin('${item.baseAsset}')">
+            <div class="scan-title">
+              <span>#${index + 1} ${item.symbol}</span>
+              <span class="${item.decision.cls}">${item.decision.decision}</span>
+            </div>
+
+            <div class="scan-rows">
+              <div class="scan-row">
+                <span>Fiyat</span>
+                <span>${formatMoney(item.price, pair, 6)}</span>
+              </div>
+              <div class="scan-row">
+                <span>RSI</span>
+                <span class="${item.rsiValue > 70 ? 'bad' : item.rsiValue < 30 ? 'good' : 'neutral'}">${formatNumber(item.rsiValue, 2)}</span>
+              </div>
+              <div class="scan-row">
+                <span>Trend</span>
+                <span class="${item.baseSignal.className}">${item.baseSignal.trend}</span>
+              </div>
+              <div class="scan-row">
+                <span>24s %</span>
+                <span class="${item.changePct >= 0 ? 'good' : 'bad'}">%${formatNumber(item.changePct, 2)}</span>
+              </div>
+              <div class="scan-row">
+                <span>Puan</span>
+                <span class="info">${item.score}</span>
+              </div>
+              <div class="scan-row">
+                <span>Risk / Ödül</span>
+                <span class="${item.upside >= item.downside ? 'good' : 'bad'}">+%${formatNumber(item.upside, 2)} / -%${formatNumber(item.downside, 2)}</span>
+              </div>
+            </div>
+
+            <div class="scan-why">${item.why}</div>
+            <div class="scan-pick">Tıkla ve analize yükle</div>
+          </div>
+        `).join("");
+      } catch (err) {
+        summary.textContent = "Tarama başarısız oldu. Birkaç saniye sonra tekrar dene.";
+      }
+    }
+
+    function pickCoin(baseAsset) {
+      document.getElementById("coin").value = baseAsset;
+      analyze();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
     document.getElementById("coin").addEventListener("change", analyze);
-    document.getElementById("pair").addEventListener("change", analyze);
+    document.getElementById("pair").addEventListener("change", async () => {
+      await analyze();
+      await scanTopCoins();
+    });
     document.getElementById("interval").addEventListener("change", analyze);
 
     analyze();
+    scanTopCoins();
     setInterval(analyze, 30000);
+    setInterval(scanTopCoins, 180000);
   </script>
 </body>
 </html>
