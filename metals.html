@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Altın & Gümüş Paneli</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg1: #07111f;
+      --bg2: #0b1220;
+      --card: #111827;
+      --card2: #0f172a;
+      --line: rgba(255,255,255,0.06);
+      --text: #ffffff;
+      --muted: #94a3b8;
+      --gold: #f6c453;
+      --silver: #cbd5e1;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --neutral: #facc15;
+      --info: #60a5fa;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--gold);
+      margin: 0 0 8px;
+      font-size: 38px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 20px;
+      margin-top: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 1px solid var(--line);
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin: 0 0 14px;
+      color: #f9fafb;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      padding: 14px 18px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+      background: #1f2937;
+      color: white;
+    }
+
+    .tab-btn.active-gold {
+      background: var(--gold);
+      color: #111827;
+    }
+
+    .tab-btn.active-silver {
+      background: var(--silver);
+      color: #111827;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #e5e7eb;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: #1f2937;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      padding: 14px 18px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .primary {
+      background: var(--gold);
+      color: #111827;
+      flex: 1;
+    }
+
+    .ghost {
+      background: #374151;
+      color: white;
+    }
+
+    .warn {
+      background: #7c2d12;
+      color: #fff;
+    }
+
+    .summary {
+      margin-top: 15px;
+      padding: 16px;
+      background: #020617;
+      border-radius: 14px;
+      font-size: 16px;
+      line-height: 1.75;
+      border: 1px solid var(--line);
+    }
+
+    .decision-banner {
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 16px;
+      font-weight: bold;
+      font-size: 22px;
+      text-align: center;
+      border: 1px solid var(--line);
+    }
+
+    .decision-good {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--good);
+    }
+
+    .decision-bad {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--bad);
+    }
+
+    .decision-neutral {
+      background: rgba(250, 204, 21, 0.12);
+      color: var(--neutral);
+    }
+
+    .box {
+      background: var(--card2);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .box-title {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .box-value {
+      font-size: 22px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    .neutral { color: var(--neutral); }
+    .info { color: var(--info); }
+
+    .row-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .row-item {
+      background: #0b1324;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+    }
+
+    .row-item span:first-child {
+      color: var(--muted);
+    }
+
+    .row-item span:last-child {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .chart-wrap {
+      background: #0b1324;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      min-height: 520px;
+    }
+
+    #tvChart {
+      width: 100%;
+      height: 520px;
+    }
+
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .row-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .row-item span:last-child {
+        text-align: left;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .decision-banner {
+        font-size: 18px;
+      }
+
+      #tvChart {
+        height: 420px;
+      }
+
+      .chart-wrap {
+        min-height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Altın & Gümüş Paneli</h1>
+    <div class="subtitle">
+      Ons, gram ve piyasa tipi altın/gümüş takibi. Bu sürüm ayrı dosyadır; eski coin paneline dokunmaz.
+    </div>
+
+    <div class="card">
+      <div class="tab-row">
+        <button id="goldTab" class="tab-btn active-gold" onclick="switchAsset('gold')">Altın</button>
+        <button id="silverTab" class="tab-btn" onclick="switchAsset('silver')">Gümüş</button>
+      </div>
+
+      <h2 class="section-title">Girdi</h2>
+      <div class="grid">
+        <div>
+          <label for="interval">Periyot</label>
+          <select id="interval">
+            <option value="15m">15 Dakika</option>
+            <option value="1h" selected>1 Saat</option>
+            <option value="4h">4 Saat</option>
+            <option value="1d">1 Gün</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="amount">Miktar</label>
+          <input id="amount" type="number" step="0.0001" value="1" />
+        </div>
+
+        <div>
+          <label for="unit">Birim</label>
+          <select id="unit">
+            <option value="gram" selected>Gram</option>
+            <option value="ounce">Ons</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="upAlarmPrice">Yukarı Alarm (TL)</label>
+          <input id="upAlarmPrice" type="number" step="0.0001" value="0" />
+        </div>
+
+        <div>
+          <label for="downAlarmPrice">Aşağı Alarm (TL)</label>
+          <input id="downAlarmPrice" type="number" step="0.0001" value="0" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="primary" onclick="analyze()">Analiz Et</button>
+        <button class="ghost" onclick="saveData()">Kaydet</button>
+        <button class="ghost" onclick="loadSavedData()">Yükle</button>
+        <button class="warn" onclick="requestNotificationPermission()">Bildirim Aç</button>
+      </div>
+
+      <div id="decisionBanner" class="decision-banner decision-neutral">BEKLENİYOR</div>
+      <div class="summary" id="summaryBox">Veri bekleniyor...</div>
+      <div class="small-note" id="updateTime">-</div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Piyasa Fiyatları</h2>
+      <div class="stats-grid">
+        <div class="box"><div class="box-title">Ons Fiyatı (USD)</div><div class="box-value" id="spotUsdBox">-</div></div>
+        <div class="box"><div class="box-title">USD/TRY</div><div class="box-value" id="usdTryBox">-</div></div>
+        <div class="box"><div class="box-title">Gram Fiyatı (TL)</div><div class="box-value" id="gramTryBox">-</div></div>
+        <div class="box"><div class="box-title">Seçili Birim Değeri</div><div class="box-value" id="selectedUnitBox">-</div></div>
+        <div class="box"><div class="box-title">Çeyrek (yaklaşık TL)</div><div class="box-value" id="quarterBox">-</div></div>
+        <div class="box"><div class="box-title">Yarım (yaklaşık TL)</div><div class="box-value" id="halfBox">-</div></div>
+        <div class="box"><div class="box-title">Tam (yaklaşık TL)</div><div class="box-value" id="fullBox">-</div></div>
+        <div class="box"><div class="box-title">Cumhuriyet (yaklaşık TL)</div><div class="box-value" id="cumhuriyetBox">-</div></div>
+      </div>
+      <div class="small-note">
+        Çeyrek/yarım/tam/cumhuriyet değerleri ons ve USD/TRY’den türetilen yaklaşık hesaplamalardır; kuyumcu alış/satış fiyatlarıyla birebir aynı olmayabilir.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Grafik</h2>
+      <div class="chart-wrap">
+        <div id="tvChart"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Analiz</h2>
+      <div class="stats-grid">
+        <div class="box"><div class="box-title">RSI</div><div class="box-value" id="rsiBox">-</div></div>
+        <div class="box"><div class="box-title">EMA 20</div><div class="box-value" id="ema20Box">-</div></div>
+        <div class="box"><div class="box-title">EMA 50</div><div class="box-value" id="ema50Box">-</div></div>
+        <div class="box"><div class="box-title">Trend</div><div class="box-value" id="trendBox">-</div></div>
+      </div>
+
+      <div class="row-list">
+        <div class="row-item"><span>Net Karar</span><span id="signalBox">-</span></div>
+        <div class="row-item"><span>Karar Sebebi</span><span id="reasonBox">-</span></div>
+        <div class="row-item"><span>Destek</span><span id="supportBox">-</span></div>
+        <div class="row-item"><span>Direnç</span><span id="resistanceBox">-</span></div>
+        <div class="row-item"><span>Stop Loss</span><span id="stopBox">-</span></div>
+        <div class="row-item"><span>Take Profit</span><span id="takeBox">-</span></div>
+        <div class="row-item"><span>Olası Yukarı Hedef</span><span id="targetUpBox">-</span></div>
+        <div class="row-item"><span>Olası Aşağı Risk</span><span id="targetDownBox">-</span></div>
+        <div class="row-item"><span>Yukarı Alarm</span><span id="upAlarmStatusBox">-</span></div>
+        <div class="row-item"><span>Aşağı Alarm</span><span id="downAlarmStatusBox">-</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "metals_panel_v1";
+    const TROY_OUNCE_TO_GRAMS = 31.1034768;
+    const COIN_EQUIVALENTS = {
+      quarter: 1.754,
+      half: 3.508,
+      full: 7.016,
+      cumhuriyet: 7.216
+    };
+
+    let currentAsset = "gold";
+    let upAlarmTriggered = false;
+    let downAlarmTriggered = false;
+
+    function formatNumber(num, digits = 2) {
+      if (num === null || num === undefined || isNaN(num)) return "-";
+      return Number(num).toLocaleString("tr-TR", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      });
+    }
+
+    function formatMoney(num, unit = "TL", digits = 2) {
+      if (num === null || num === undefined || isNaN(num)) return "-";
+      return `${formatNumber(num, digits)} ${unit}`;
+    }
+
+    function emaSeries(values, period) {
+      if (values.length < period) return [];
+      const k = 2 / (period + 1);
+      let emaPrev = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+      const out = [emaPrev];
+      for (let i = period; i < values.length; i++) {
+        emaPrev = values[i] * k + emaPrev * (1 - k);
+        out.push(emaPrev);
+      }
+      return out;
+    }
+
+    function ema(values, period) {
+      const arr = emaSeries(values, period);
+      return arr.length ? arr[arr.length - 1] : null;
+    }
+
+    function rsi(values, period = 14) {
+      if (values.length < period + 1) return null;
+      let gains = 0;
+      let losses = 0;
+      for (let i = 1; i <= period; i++) {
+        const diff = values[i] - values[i - 1];
+        if (diff >= 0) gains += diff;
+        else losses += Math.abs(diff);
+      }
+      let avgGain = gains / period;
+      let avgLoss = losses / period;
+
+      for (let i = period + 1; i < values.length; i++) {
+        const diff = values[i] - values[i - 1];
+        const gain = diff > 0 ? diff : 0;
+        const loss = diff < 0 ? Math.abs(diff) : 0;
+        avgGain = ((avgGain * (period - 1)) + gain) / period;
+        avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+      }
+
+      if (avgLoss === 0) return 100;
+      const rs = avgGain / avgLoss;
+      return 100 - (100 / (1 + rs));
+    }
+
+    async function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("Bu tarayıcı bildirim desteklemiyor.");
+        return;
+      }
+      const result = await Notification.requestPermission();
+      if (result === "granted") {
+        alert("Bildirim izni verildi.");
+      } else {
+        alert("Bildirim izni verilmedi.");
+      }
+    }
+
+    function notifyUser(title, body) {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+      new Notification(title, { body });
+    }
+
+    function switchAsset(asset) {
+      currentAsset = asset;
+
+      document.getElementById("goldTab").className = asset === "gold"
+        ? "tab-btn active-gold"
+        : "tab-btn";
+
+      document.getElementById("silverTab").className = asset === "silver"
+        ? "tab-btn active-silver"
+        : "tab-btn";
+
+      analyze();
+    }
+
+    function saveData() {
+      const data = {
+        currentAsset,
+        interval: document.getElementById("interval").value,
+        amount: document.getElementById("amount").value,
+        unit: document.getElementById("unit").value,
+        upAlarmPrice: document.getElementById("upAlarmPrice").value,
+        downAlarmPrice: document.getElementById("downAlarmPrice").value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      alert("Kaydedildi.");
+    }
+
+    function loadSavedData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        alert("Kayıtlı veri bulunamadı.");
+        return;
+      }
+
+      try {
+        const data = JSON.parse(raw);
+        document.getElementById("interval").value = data.interval || "1h";
+        document.getElementById("amount").value = data.amount || "1";
+        document.getElementById("unit").value = data.unit || "gram";
+        document.getElementById("upAlarmPrice").value = data.upAlarmPrice || "0";
+        document.getElementById("downAlarmPrice").value = data.downAlarmPrice || "0";
+        currentAsset = data.currentAsset || "gold";
+        switchAsset(currentAsset);
+      } catch {
+        alert("Kayıt okunamadı.");
+      }
+    }
+
+    async function fetchSpot(symbol) {
+      const res = await fetch(`https://api.gold-api.com/price/${symbol}`);
+      if (!res.ok) throw new Error("Spot veri alınamadı");
+      return await res.json();
+    }
+
+    async function fetchUsdTry() {
+      const res = await fetch("https://api.exchangerate-api.com/v6/latest/USD");
+      if (!res.ok) throw new Error("Kur verisi alınamadı");
+      const json = await res.json();
+      return json.rates.TRY;
+    }
+
+    async function fetchHistory(symbol) {
+      const res = await fetch(`https://api.gold-api.com/price/history/${symbol}?interval=1h&limit=120`);
+      if (!res.ok) throw new Error("Geçmiş veri alınamadı");
+      return await res.json();
+    }
+
+    function parseHistoryToValues(historyObj) {
+      if (!historyObj) return [];
+      if (Array.isArray(historyObj)) {
+        return historyObj
+          .map(item => Number(item.price || item.close || item.value))
+          .filter(v => !isNaN(v));
+      }
+      if (Array.isArray(historyObj.data)) {
+        return historyObj.data
+          .map(item => Number(item.price || item.close || item.value))
+          .filter(v => !isNaN(v));
+      }
+      return [];
+    }
+
+    function loadTradingViewChart() {
+      const interval = document.getElementById("interval").value;
+      const map = { "15m": "15", "1h": "60", "4h": "240", "1d": "D" };
+      const tvInterval = map[interval] || "60";
+      const symbol = currentAsset === "gold" ? "OANDA:XAUUSD" : "OANDA:XAGUSD";
+
+      const chartEl = document.getElementById("tvChart");
+      chartEl.innerHTML = "";
+
+      const wrap = document.createElement("div");
+      wrap.className = "tradingview-widget-container";
+      wrap.style.height = "100%";
+      wrap.style.width = "100%";
+
+      const widget = document.createElement("div");
+      widget.className = "tradingview-widget-container__widget";
+      widget.style.height = "100%";
+      widget.style.width = "100%";
+
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+      script.async = true;
+      script.innerHTML = JSON.stringify({
+        autosize: true,
+        symbol,
+        interval: tvInterval,
+        timezone: "Europe/Istanbul",
+        theme: "dark",
+        style: "1",
+        locale: "tr",
+        backgroundColor: "#0b1324",
+        allow_symbol_change: false,
+        hide_side_toolbar: false,
+        withdateranges: true,
+        support_host: "https://www.tradingview.com"
+      });
+
+      wrap.appendChild(widget);
+      wrap.appendChild(script);
+      chartEl.appendChild(wrap);
+    }
+
+    function checkPriceAlerts(currentTlPrice, upAlarmPrice, downAlarmPrice, assetName) {
+      const upBox = document.getElementById("upAlarmStatusBox");
+      const downBox = document.getElementById("downAlarmStatusBox");
+
+      if (!upAlarmPrice || upAlarmPrice <= 0) {
+        upAlarmTriggered = false;
+        upBox.textContent = "Kapalı";
+        upBox.className = "neutral";
+      } else if (currentTlPrice >= upAlarmPrice && !upAlarmTriggered) {
+        upAlarmTriggered = true;
+        upBox.textContent = `ÇALDI (${formatMoney(currentTlPrice, "TL", 2)})`;
+        upBox.className = "good";
+        notifyUser(`${assetName} Yukarı Alarm`, `${assetName} hedef fiyatı geçti: ${formatMoney(currentTlPrice, "TL", 2)}`);
+      } else if (currentTlPrice < upAlarmPrice) {
+        upAlarmTriggered = false;
+        upBox.textContent = `Bekliyor (${formatMoney(upAlarmPrice, "TL", 2)})`;
+        upBox.className = "info";
+      } else {
+        upBox.textContent = `ÇALDI (${formatMoney(currentTlPrice, "TL", 2)})`;
+        upBox.className = "good";
+      }
+
+      if (!downAlarmPrice || downAlarmPrice <= 0) {
+        downAlarmTriggered = false;
+        downBox.textContent = "Kapalı";
+        downBox.className = "neutral";
+      } else if (currentTlPrice <= downAlarmPrice && !downAlarmTriggered) {
+        downAlarmTriggered = true;
+        downBox.textContent = `ÇALDI (${formatMoney(currentTlPrice, "TL", 2)})`;
+        downBox.className = "bad";
+        notifyUser(`${assetName} Düşüş Alarmı`, `${assetName} aşağı alarma indi: ${formatMoney(currentTlPrice, "TL", 2)}`);
+      } else if (currentTlPrice > downAlarmPrice) {
+        downAlarmTriggered = false;
+        downBox.textContent = `Bekliyor (${formatMoney(downAlarmPrice, "TL", 2)})`;
+        downBox.className = "info";
+      } else {
+        downBox.textContent = `ÇALDI (${formatMoney(currentTlPrice, "TL", 2)})`;
+        downBox.className = "bad";
+      }
+    }
+
+    async function analyze() {
+      const interval = document.getElementById("interval").value;
+      const amount = Number(document.getElementById("amount").value || 0);
+      const unit = document.getElementById("unit").value;
+      const upAlarmPrice = Number(document.getElementById("upAlarmPrice").value || 0);
+      const downAlarmPrice = Number(document.getElementById("downAlarmPrice").value || 0);
+
+      const summaryBox = document.getElementById("summaryBox");
+      const banner = document.getElementById("decisionBanner");
+
+      summaryBox.textContent = "Veri alınıyor...";
+      banner.textContent = "HESAPLANIYOR";
+      banner.className = "decision-banner decision-neutral";
+
+      try {
+        const symbol = currentAsset === "gold" ? "XAUUSD" : "XAGUSD";
+        const assetLabel = currentAsset === "gold" ? "Altın" : "Gümüş";
+
+        const [spotData, usdTry, historyRaw] = await Promise.all([
+          fetchSpot(symbol),
+          fetchUsdTry(),
+          fetchHistory(symbol)
+        ]);
+
+        const history = parseHistoryToValues(historyRaw);
+        const currentUsdPerOunce = Number(spotData.price || spotData.amount || spotData.value);
+        const gramTry = (currentUsdPerOunce / TROY_OUNCE_TO_GRAMS) * usdTry;
+        const ounceTry = currentUsdPerOunce * usdTry;
+
+        const selectedUnitPrice = unit === "gram" ? gramTry : ounceTry;
+        const totalValue = selectedUnitPrice * amount;
+
+        const ema20 = ema(history, 20);
+        const ema50 = ema(history, 50);
+        const rsiValue = rsi(history, 14);
+        const support = history.length ? Math.min(...history.slice(-30)) : null;
+        const resistance = history.length ? Math.max(...history.slice(-30)) : null;
+
+        let trend = "Kararsız";
+        let signal = "BEKLE";
+        let signalClass = "neutral";
+        let reason = "Net bir üstünlük yok.";
+
+        if (ema20 && ema50 && currentUsdPerOunce > ema20 && ema20 > ema50 && rsiValue >= 40 && rsiValue <= 68) {
+          trend = "Yukarı trend";
+          signal = "AL";
+          signalClass = "good";
+          reason = "Trend yukarı ve momentum dengeli.";
+        } else if (ema20 && ema50 && currentUsdPerOunce < ema20 && ema20 < ema50) {
+          trend = "Aşağı trend";
+          signal = "SAT";
+          signalClass = "bad";
+          reason = "Trend aşağı ve yapı zayıf.";
+        } else if (rsiValue > 70) {
+          trend = "Aşırı alım";
+          signal = "DİKKAT";
+          signalClass = "bad";
+          reason = "Aşırı alım bölgesi.";
+        } else if (rsiValue < 30) {
+          trend = "Aşırı satım";
+          signal = "TAKİP ET";
+          signalClass = "good";
+          reason = "Aşırı satım bölgesi, tepki ihtimali olabilir.";
+        }
+
+        const stopLoss = support ? support * 0.98 : null;
+        const takeProfit = resistance ? resistance * 0.98 : null;
+        const targetUp = resistance ? (signal === "AL" ? resistance * 1.03 : resistance * 1.01) : null;
+        const targetDown = support ? (signal === "SAT" ? support * 0.97 : support * 0.99) : null;
+
+        banner.textContent = signal;
+        banner.className = `decision-banner ${signalClass === "good" ? "decision-good" : signalClass === "bad" ? "decision-bad" : "decision-neutral"}`;
+
+        summaryBox.innerHTML =
+          `<b>${assetLabel}</b> analiz tamamlandı.<br>` +
+          `Periyot: <b>${interval}</b><br>` +
+          `Trend: <span class="${signalClass}"><b>${trend}</b></span><br>` +
+          `Karar: <span class="${signalClass}"><b>${signal}</b></span><br>` +
+          `Açıklama: <b>${reason}</b>`;
+
+        document.getElementById("spotUsdBox").textContent = formatMoney(currentUsdPerOunce, "USD", 2);
+        document.getElementById("usdTryBox").textContent = formatMoney(usdTry, "TRY", 4);
+        document.getElementById("gramTryBox").textContent = formatMoney(gramTry, "TL", 2);
+        document.getElementById("selectedUnitBox").textContent = formatMoney(totalValue, "TL", 2);
+
+        if (currentAsset === "gold") {
+          document.getElementById("quarterBox").textContent = formatMoney(gramTry * COIN_EQUIVALENTS.quarter, "TL", 2);
+          document.getElementById("halfBox").textContent = formatMoney(gramTry * COIN_EQUIVALENTS.half, "TL", 2);
+          document.getElementById("fullBox").textContent = formatMoney(gramTry * COIN_EQUIVALENTS.full, "TL", 2);
+          document.getElementById("cumhuriyetBox").textContent = formatMoney(gramTry * COIN_EQUIVALENTS.cumhuriyet, "TL", 2);
+        } else {
+          document.getElementById("quarterBox").textContent = "-";
+          document.getElementById("halfBox").textContent = "-";
+          document.getElementById("fullBox").textContent = "-";
+          document.getElementById("cumhuriyetBox").textContent = "-";
+        }
+
+        document.getElementById("rsiBox").textContent = rsiValue ? formatNumber(rsiValue, 2) : "-";
+        document.getElementById("rsiBox").className = `box-value ${rsiValue > 70 ? "bad" : rsiValue < 30 ? "good" : "neutral"}`;
+        document.getElementById("ema20Box").textContent = ema20 ? formatMoney((ema20 / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("ema50Box").textContent = ema50 ? formatMoney((ema50 / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("trendBox").textContent = trend;
+        document.getElementById("trendBox").className = `box-value ${signalClass}`;
+
+        document.getElementById("signalBox").textContent = signal;
+        document.getElementById("signalBox").className = signalClass;
+        document.getElementById("reasonBox").textContent = reason;
+        document.getElementById("reasonBox").className = "info";
+
+        document.getElementById("supportBox").textContent = support ? formatMoney((support / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("supportBox").className = "info";
+        document.getElementById("resistanceBox").textContent = resistance ? formatMoney((resistance / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("resistanceBox").className = "info";
+        document.getElementById("stopBox").textContent = stopLoss ? formatMoney((stopLoss / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("stopBox").className = "bad";
+        document.getElementById("takeBox").textContent = takeProfit ? formatMoney((takeProfit / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("takeBox").className = "good";
+        document.getElementById("targetUpBox").textContent = targetUp ? formatMoney((targetUp / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("targetUpBox").className = "good";
+        document.getElementById("targetDownBox").textContent = targetDown ? formatMoney((targetDown / TROY_OUNCE_TO_GRAMS) * usdTry, "TL", 2) : "-";
+        document.getElementById("targetDownBox").className = "bad";
+
+        checkPriceAlerts(
+          unit === "gram" ? gramTry : ounceTry,
+          upAlarmPrice,
+          downAlarmPrice,
+          assetLabel
+        );
+
+        document.getElementById("updateTime").textContent =
+          "Son güncelleme: " + new Date().toLocaleString("tr-TR");
+
+        loadTradingViewChart();
+      } catch (err) {
+        summaryBox.textContent = "Veri alınamadı. Birkaç saniye sonra tekrar dene.";
+      }
+    }
+
+    document.getElementById("interval").addEventListener("change", analyze);
+    document.getElementById("unit").addEventListener("change", analyze);
+
+    loadSavedData();
+    analyze();
+    setInterval(analyze, 30000);
+  </script>
+</body>
+</html>
