@@ -257,11 +257,18 @@
       }
     }
 
-    async function fetchSpot(symbol) {
-      const res = await fetch(`https://gold-api.com/price/${symbol}`);
-      if (!res.ok) throw new Error("Spot veri alınamadı");
-      return await res.json();
-    }
+async function fetchSpot(symbol) {
+  const res = await fetch("https://api.metals.live/v1/spot");
+  const data = await res.json();
+
+  if (symbol === "XAU") {
+    const gold = data.find(x => x.gold);
+    return { price: gold.gold };
+  } else {
+    const silver = data.find(x => x.silver);
+    return { price: silver.silver };
+  }
+}
 
     async function fetchUsdTry() {
       const res = await fetch("https://open.er-api.com/v6/latest/USD");
