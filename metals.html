@@ -817,9 +817,9 @@
     document.getElementById("interval").addEventListener("change", analyze);
     document.getElementById("unit").addEventListener("change", analyze);
 
-    loadSavedData();
-    analyze();
-    setInterval(analyze, 30000);
+    loadSavedData(false);
+analyze();
+setInterval(analyze, 30000);
   </script>
 </body>
 </html>
